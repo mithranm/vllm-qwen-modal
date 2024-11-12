@@ -5,8 +5,8 @@ import modal
 
 MODELS_DIR = "/qwens"
 
-DEFAULT_NAME = "Qwen/Qwen2.5-Coder-32B-Instruct"
-DEFAULT_REVISION = "d7a414c7c6297f60dcf1b5a14b7e5f25864e3181"
+DEFAULT_NAME = "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF"
+DEFAULT_REVISION = "6ad0cdf97c9a3cfd154faf15a973c93044ba5c7e"
 
 volume = modal.Volume.from_name("qwens", create_if_missing=True)
 

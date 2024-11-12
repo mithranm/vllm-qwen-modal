@@ -5,18 +5,19 @@ vllm_image = modal.Image.debian_slim(python_version="3.10").pip_install(
 )
 
 MODELS_DIR = "/qwens"
-MODEL_NAME = "Qwen/Qwen2.5-Coder-32B-Instruct"
-MODEL_REVISION = "d7a414c7c6297f60dcf1b5a14b7e5f25864e3181"
+MODEL_NAME = "Qwen/Qwen2.5-Coder-32B-Instruct-GGUF"
+MODEL_QUANTIZATION = "qwen2.5-coder-32b-instruct-q8_0.gguf" #Only relevant for GGUF quantized models
+MODEL_REVISION = "6ad0cdf97c9a3cfd154faf15a973c93044ba5c7e"
 
 try:
     volume = modal.Volume.lookup("qwens", create_if_missing=False)
 except modal.exception.NotFoundError:
-    raise Exception("Download models first with modal run download_llama.py")
+    raise Exception("Download models first with modal run download_model.py")
 
 app = modal.App("example-vllm-openai-compatible")
 
 N_GPU = 1  # tip: for best results, first upgrade to more powerful GPUs, and only then increase GPU count
-TOKEN = "agihouse2024"  # auth token. for production use, replace with a modal.Secret
+TOKEN = "api-key"  # auth token. for production use, replace with a modal.Secret
 
 MINUTES = 60  # seconds
 HOURS = 60 * MINUTES
@@ -101,7 +102,7 @@ def serve():
     web_app.include_router(router)
 
     engine_args = AsyncEngineArgs(
-        model=MODELS_DIR + "/" + MODEL_NAME,
+        model = MODELS_DIR + "/" + MODEL_NAME + ("/" + MODEL_QUANTIZATION if MODEL_QUANTIZATION else ""),
         tensor_parallel_size=N_GPU,
         gpu_memory_utilization=0.90,
         max_model_len=13000,
